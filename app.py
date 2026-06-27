@@ -1,33 +1,41 @@
 import streamlit as st
 import time
+import pandas as pd
 
-st.set_page_config(page_title="SÜPERZEKA PRO", layout="wide")
+st.set_page_config(page_title="SÜPERZEKA PRO v20", layout="wide")
 
 # CSS: SİBER TEMA
 st.markdown("""<style>
     .stApp { background-color: #050505 !important; }
-    h1, b, p { color: #00ffcc !important; }
-    .chat-box { border: 1px dashed #00ffcc; padding: 10px; background: #0c0c0c; }
+    h1, h2, b, p, label { color: #00ffcc !important; }
+    .chat-box { border: 1px dashed #00ffcc; padding: 15px; background: #0c0c0c; border-radius: 10px; }
+    .info-box { border: 1px solid #00ffcc; padding: 10px; background: #111; color: #fff; }
 </style>""", unsafe_allow_html=True)
 
-# GÜVENLİK SİSTEMİ
-if "hata_sayisi" not in st.session_state: st.session_state.hata_sayisi = 0
+# 1. SIDEBAR (YAPIMCI TABLOSU)
+st.sidebar.title("🛠️ SİBER ÜS")
+yapimci_tablo = pd.DataFrame({"Özellik": ["Geliştirici", "Versiyon"], "Bilgi": ["SüperZeka", "v20.0"]})
+st.sidebar.table(yapimci_tablo)
 
-st.sidebar.title("🔐 GÜVENLİK")
-sifre = st.sidebar.text_input("Şifre (Dakika):", type="password")
+# 2. GİRİŞ VE MOD
+sifre = st.sidebar.text_input("Giriş:", type="password")
+mod = "ÖĞRETMEN" if sifre == time.strftime("%M") else "ÖĞRENCİ"
 
-if sifre:
-    if sifre == time.strftime("%M"):
-        st.sidebar.success("Giriş Başarılı!")
-        st.session_state.hata_sayisi = 0
-    else:
-        st.session_state.hata_sayisi += 1
-        st.sidebar.error(f"Hatalı Şifre! {st.session_state.hata_sayisi}/3")
+# 3. PANORAMA: POMODORO, BİLGİ VE HADİS
+st.title("🧠 SÜPERZEKA PRO v20")
+col1, col2, col3 = st.columns(3)
+col1.metric("⏱️ Pomodoro", "25:00")
+col2.markdown("<div class='info-box'>🌟 <b>Günün Bilgisi:</b> Arılar, dünyanın en çalışkan canlılarıdır!</div>", unsafe_allow_html=True)
+col3.markdown("<div class='info-box'>🕋 <b>Hadis-i Şerif:</b> 'İlim öğrenmek her Müslümana farzdır.'</div>", unsafe_allow_html=True)
 
-# 3 HATA OLURSA FOTOĞRAF GÖSTER
-if st.session_state.hata_sayisi >= 3:
-    st.warning("⚠️ Güvenlik ihlali! Sisteme girişin geçici olarak kısıtlandı.")
-     # İşte 3 hata sonrası güvenlik şeması
-else:
-    st.title("🧠 SÜPERZEKA PRO")
-    st.write("Sistem aktif. Şifreni gir ve devam et.")
+# 4. SORU SORMA
+st.markdown("---")
+girdi = st.text_input("Soru sor:")
+if girdi:
+    cevap = "Analiz ediliyor..."
+    st.session_state.setdefault("gecmis", []).append((girdi, cevap))
+    st.success("Soru buluta gönderildi!")
+
+# 5. GEÇMİŞ
+for q, a in reversed(st.session_state.get("gecmis", [])):
+    st.markdown(f"<div class='chat-box'>👤 {q}<br>🤖 {a}</div>", unsafe_allow_html=True)

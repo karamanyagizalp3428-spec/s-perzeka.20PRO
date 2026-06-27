@@ -19,7 +19,7 @@ st.markdown("""<style>
 
 # SIDEBAR (SENİN İMZANLA)
 st.sidebar.title("🛠️ SİBER ÜS")
-yapimci_tablo = pd.DataFrame({"Özellik": ["Geliştirici", "Versiyon"], "Bilgi": ["Yağız Alp", "v20.0"]})
+yapimci_tablo = pd.DataFrame({"Özellik": ["Geliştirici", "Versiyon"], "Bilgi": ["Yağızalp", "v20.0"]})
 st.sidebar.table(yapimci_tablo)
 
 # GİRİŞ VE MOD

@@ -1,6 +1,11 @@
 import streamlit as st
+import google.generativeai as genai
 import time
 import pandas as pd
+
+# GEMINI AYARLARI
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel('gemini-pro')
 
 st.set_page_config(page_title="SÜPERZEKA PRO v20", layout="wide")
 
@@ -12,30 +17,29 @@ st.markdown("""<style>
     .info-box { border: 1px solid #00ffcc; padding: 10px; background: #111; color: #fff; }
 </style>""", unsafe_allow_html=True)
 
-# 1. SIDEBAR (YAPIMCI TABLOSU)
+# SIDEBAR (SENİN İMZANLA)
 st.sidebar.title("🛠️ SİBER ÜS")
-yapimci_tablo = pd.DataFrame({"Özellik": ["Geliştirici", "Versiyon"], "Bilgi": ["SüperZeka", "v20.0"]})
+yapimci_tablo = pd.DataFrame({"Özellik": ["Geliştirici", "Versiyon"], "Bilgi": ["Yağız Alp", "v20.0"]})
 st.sidebar.table(yapimci_tablo)
 
-# 2. GİRİŞ VE MOD
+# GİRİŞ VE MOD
 sifre = st.sidebar.text_input("Giriş:", type="password")
 mod = "ÖĞRETMEN" if sifre == time.strftime("%M") else "ÖĞRENCİ"
 
-# 3. PANORAMA: POMODORO, BİLGİ VE HADİS
+# PANORAMA
 st.title("🧠 SÜPERZEKA PRO v20")
 col1, col2, col3 = st.columns(3)
 col1.metric("⏱️ Pomodoro", "25:00")
-col2.markdown("<div class='info-box'>🌟 <b>Günün Bilgisi:</b> Arılar, dünyanın en çalışkan canlılarıdır!</div>", unsafe_allow_html=True)
-col3.markdown("<div class='info-box'>🕋 <b>Hadis-i Şerif:</b> 'İlim öğrenmek her Müslümana farzdır.'</div>", unsafe_allow_html=True)
+col2.markdown("<div class='info-box'>🌟 <b>Günün Bilgisi:</b> Gemini modelleri çok geniş bir veri havuzuna sahiptir.</div>", unsafe_allow_html=True)
+col3.markdown("<div class='info-box'>🕋 <b>Hadis-i Şerif:</b> 'İlim öğrenmek farzdır.'</div>", unsafe_allow_html=True)
 
-# 4. SORU SORMA
+# SORU SORMA (GEMINI DESTEKLİ)
 st.markdown("---")
 girdi = st.text_input("Soru sor:")
 if girdi:
-    cevap = "Analiz ediliyor..."
+    cevap = model.generate_content(girdi).text
     st.session_state.setdefault("gecmis", []).append((girdi, cevap))
-    st.success("Soru buluta gönderildi!")
 
-# 5. GEÇMİŞ
+# GEÇMİŞ
 for q, a in reversed(st.session_state.get("gecmis", [])):
     st.markdown(f"<div class='chat-box'>👤 {q}<br>🤖 {a}</div>", unsafe_allow_html=True)

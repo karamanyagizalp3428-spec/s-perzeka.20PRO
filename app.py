@@ -1,47 +1,55 @@
 import streamlit as st
 import time
 
-# Sayfa ayarları
-st.set_page_config(page_title="SÜPERZEKA PRO", layout="wide")
+# SAYFA AYARLARI
+st.set_page_config(page_title="SÜPERZEKA v20 PRO", layout="wide")
 
-# Tasarım: Karanlık ve siber tema
+# CSS: SİBER KARANLIK TEMA
 st.markdown("""
     <style>
-    .stApp { background-color: #050505 !important; }
-    h1, b, p { color: #00ffcc !important; font-family: sans-serif !important; }
+    .stApp, [data-testid="stSidebar"] { background-color: #050505 !important; }
+    h1, h2, b, p, label { color: #00ffcc !important; font-family: 'Consolas', monospace !important; }
     .chat-box { border: 1px dashed #00ffcc; padding: 15px; margin: 10px 0; background: #0c0c0c; border-radius: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
-# Hafıza sistemi
-if "mod" not in st.session_state: st.session_state.mod = "ÖĞRENCİ"
 if "gecmis" not in st.session_state: st.session_state.gecmis = []
 
-# Sidebar (Sol menü)
+# SIDEBAR
 st.sidebar.title("🔐 SİBER ÜS")
-mod_secim = st.sidebar.radio("Mod Seçimi:", ["ÖĞRENCİ", "ÖĞRETMEN"])
+sifre = st.sidebar.text_input("Şifre (Şu anki dakika):", type="password")
 
-if mod_secim == "ÖĞRETMEN":
-    sifre = st.sidebar.text_input("Şifre gir:", type="password")
-    if sifre == "123": # Basit şifre sistemi
-        st.session_state.mod = "ÖĞRETMEN"
-        st.sidebar.success("YETKİLİ GİRİŞİ BAŞARILI!")
-    else:
-        st.sidebar.error("Yetkisiz Erişim!")
-        st.session_state.mod = "ÖĞRENCİ"
+# ÖĞRETMEN Mİ ÖĞRENCİ Mİ?
+if sifre == time.strftime("%M"):
+    mod = "ÖĞRETMEN"
+    st.sidebar.success("YETKİLİ: ÖĞRETMEN")
 else:
-    st.session_state.mod = "ÖĞRENCİ"
+    mod = "ÖĞRENCİ"
+    st.sidebar.info("MOD: ÖĞRENCİ")
 
-# Ana ekran
-st.title("🧠 SÜPERZEKA PRO")
-st.write(f"Aktif Yetki: **{st.session_state.mod}**")
+# ANA EKRAN
+st.title("🧠 SÜPERZEKA v20 PRO")
 
-# Sorgu kutusu
-girdi = st.text_input("Komut gir ve Enter'a bas:")
+# BİLGİ VE HADİS
+col1, col2 = st.columns(2)
+col1.info("🌟 Günün Bilgisi: Işık hızı saniyede yaklaşık 300.000 km'dir.")
+col2.info("🕋 Hadis: 'İlim Çin'de bile olsa gidip alınız.'")
+
+# SOHBET MANTIĞI (DÜZELTİLMİŞ)
+girdi = st.text_input("Bir şeyler yaz:")
 if girdi:
-    cevap = "Detaylı açıklama yapılıyor..." if st.session_state.mod == "ÖĞRETMEN" else "İpucu veriliyor..."
+    # 1. Selamlaşma kontrolü
+    if any(kelime in girdi.lower() for kelime in ["selam", "merhaba", "hi"]):
+        cevap = "Merhaba! SüperZeka v20 Pro hizmetinde."
+    # 2. Matematik kontrolü
+    elif any(islem in girdi for islem in ["+", "-", "*", "/"]):
+        cevap = "Matematiksel işlem tespit edildi! " + ("Sonuç: " + str(eval(girdi)) if mod=="ÖĞRETMEN" else "Bu işlemi nasıl yapacağını biliyorsun, bir düşün!")
+    # 3. Genel
+    else:
+        cevap = "Harika bir soru! " + ("Şöyle ki: [DETAYLI ANLATIM]" if mod=="ÖĞRETMEN" else "İşte sana bir ipucu...")
+    
     st.session_state.gecmis.append((girdi, cevap))
 
-# Geçmişi göster
+# EKRANA BAS
 for q, a in reversed(st.session_state.gecmis):
     st.markdown(f"<div class='chat-box'>👤 {q}<br>🤖 {a}</div>", unsafe_allow_html=True)
